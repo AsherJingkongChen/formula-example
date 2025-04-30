@@ -103,16 +103,28 @@ jobs:
                   gh release delete --yes '${{ github.ref_name }}' || true
                   gh release create --generate-notes '${{ github.ref_name }}' dist/native-*/*.tgz
 
-            - name: Publish to Homebrew
-              env:
-                  GH_TOKEN: "${{ secrets.HOMEBREW_TOKEN }}"
+            - id: homebrew-prepare
+              name: Publish to Homebrew (Prepare)
               run: |
-                  cargo metadata --format-version 1 --no-deps \
-                  | jq -cs '
-                    [ (.[0].packages.[0] | del(.id, .targets)),
-                      (.[1:] | add) ]
-                    | add
-                    | with_entries(select(.value != null))
-                    | { dict: . | @json, name }' \
-                    - dist/native-*/*.tgz.meta.json \
-                  | gh workflow run --json -R AsherJingkongChen/homebrew-- publish.yml
+                  ( printf 'inputs=' && \
+                    cargo metadata --format-version 1 --no-deps \
+                    | jq -cs '
+                      [ (.[0].packages.[0] | del(.id, .targets)),
+                        (.[1:] | add) ]
+                      | add
+                      | with_entries(select(.value != null))
+                      | { dict: . | @json, name }' \
+                      - dist/native-*/*.tgz.meta.json ) \
+                  | tee -a "${GITHUB_OUTPUT}"
+            - name: Publish to Homebrew
+              uses: the-actions-org/workflow-dispatch@v4
+              with:
+                  display-workflow-run-url-interval: 30s
+                  inputs: "${{ steps.homebrew-prepare.outputs.inputs }}"
+                  ref: main
+                  repo: AsherJingkongChen/homebrew--
+                  token: "${{ secrets.HOMEBREW_TOKEN }}"
+                  wait-for-completion-interval: 30s
+                  wait-for-completion: true
+                  workflow-logs: print
+                  workflow: publish.yml
