@@ -10,7 +10,7 @@ Simple example binary for Homebrew formula testing
 
 1. **[`brew`](https://brew.sh/)**
     ```shell
-    brew install AsherJingkongChen/-/formula-example
+    brew install asherjingkongchen/-/formula-example
     ```
 2. **[`cargo-binstall`](https://github.com/cargo-bins/cargo-binstall?tab=readme-ov-file#installation)**
     ```shell
