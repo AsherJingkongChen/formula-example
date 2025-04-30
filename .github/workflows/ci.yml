@@ -119,12 +119,12 @@ jobs:
             - name: Publish to Homebrew
               uses: the-actions-org/workflow-dispatch@v4
               with:
-                  display-workflow-run-url-interval: 30s
+                  display-workflow-run-url-interval: 10s
                   inputs: "${{ steps.homebrew-prepare.outputs.inputs }}"
                   ref: main
                   repo: AsherJingkongChen/homebrew--
                   token: "${{ secrets.HOMEBREW_TOKEN }}"
                   wait-for-completion-interval: 30s
                   wait-for-completion: true
-                  workflow-logs: print
+                  workflow-logs: ignore
                   workflow: publish.yml
