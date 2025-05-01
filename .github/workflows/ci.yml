@@ -106,10 +106,12 @@ jobs:
               run: |
                   ( printf 'inputs=' && \
                     cargo metadata --format-version 1 --locked --no-deps \
+                      --manifest-path Cargo.toml --no-deps \
                     | jq -cs '
                       [ ( .[0].packages.[0]
-                          | del(.categories, .dependencies, .id, .metadata, .targets) ),
-                        (.[1:] | add) ]
+                          | { description, homepage, license,
+                              name, repository, version } ),
+                        ( .[1:] | add ) ]
                       | add
                       | with_entries(select(.value != null))
                       | { dict: . | debug | @json, name }' \
