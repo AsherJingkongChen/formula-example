@@ -1,7 +1,7 @@
 # Formula Example
 
 [![Rust](https://img.shields.io/crates/msrv/formula-example?style=for-the-badge&label=rust&logo=rust&logoColor=fff&labelColor=333&color=d41)](https://crates.io/crates/formula-example)
-[![Homebrew](https://img.shields.io/github/v/release/AsherJingkongChen/formula-example?style=for-the-badge&label=homebrew&logo=homebrew&logoColor=fc9&labelColor=333&color=fa4)](https://github.com/AsherJingkongChen/homebrew--/blob/main/Formula/formula-example.rb)
+[![Homebrew](https://img.shields.io/badge/dynamic/regex?url=https%3A%2F%2Fraw.githubusercontent.com%2FAsherJingkongChen%2Fhomebrew--%2Frefs%2Fheads%2Fmain%2FFormula%2Fformula-example.rb&search=version%20%22%28%5B0-9%5D%2B.%5B0-9%5D%2B.%5B0-9%5D%2B%29%22&replace=v%241&style=for-the-badge&label=homebrew&logo=homebrew&logoColor=fc9&labelColor=333&color=b73)](https://github.com/AsherJingkongChen/homebrew--/blob/main/Formula/formula-example.rb)
 [![Crates.io](https://img.shields.io/crates/v/formula-example?style=for-the-badge&label=crates&logo=docs.rs&logoColor=da3&labelColor=333&color=473)](https://crates.io/crates/formula-example)
 
 Simple example binary for Homebrew formula testing
