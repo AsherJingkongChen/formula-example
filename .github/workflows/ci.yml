@@ -7,7 +7,7 @@ on:
 
 concurrency:
     cancel-in-progress: false
-    group: "${{ github.workflow }}"
+    group: "${{ github.workflow }}-${{ github.ref }}"
 
 env:
     CARGO_TERM_COLOR: "always"
@@ -65,16 +65,13 @@ jobs:
               run: cargo build --locked --release --target '${{ matrix.rust-target }}'
             - name: Package
               run: |
-                  DIST_FILE="dist/native/${NAME}-${{ matrix.rust-target }}-${{ github.ref_name }}.tgz"
+                  DIST_PATH="dist/native/${NAME}-${{ matrix.rust-target }}-${{ github.ref_name }}.tgz"
 
                   mkdir -p dist/native/
-                  tar -vvczf "${DIST_FILE}" \
-                      -C 'target/${{ matrix.rust-target }}/release' "${NAME}"
-
-                  shasum -ba 256 "${DIST_FILE}" \
-                  | cut -d ' ' -f 1 \
-                  | jq -cR '{ "sha256-${{ matrix.rust-target }}": . }' \
-                  > "${DIST_FILE}.meta.json"
+                  tar -vvczf "${DIST_PATH}" -C 'target/${{ matrix.rust-target }}/release' "${NAME}"
+                  openssl 'sha256' "${DIST_PATH}" \
+                  | jq -cR '{ "sha256-${{ matrix.rust-target }}": .[-64:] }' \
+                  > "${DIST_PATH}.meta.json"
 
             - uses: actions/upload-artifact@v4
               with:
@@ -104,24 +101,25 @@ jobs:
                   gh release delete --yes '${{ github.ref_name }}' || true
                   gh release create --generate-notes '${{ github.ref_name }}' dist/native-*/*.tgz
 
-            - id: homebrew
+            - id: homebrew-prepare
               name: Publish to Homebrew (Prepare)
               run: |
                   ( printf 'inputs=' && \
-                    cargo metadata --format-version 1 --no-deps \
+                    cargo metadata --format-version 1 --locked --no-deps \
                     | jq -cs '
-                      [ (.[0].packages.[0] | del(.id, .targets)),
+                      [ ( .[0].packages.[0]
+                          | del(.categories, .dependencies, .id, .metadata, .targets) ),
                         (.[1:] | add) ]
                       | add
                       | with_entries(select(.value != null))
-                      | { dict: . | @json, name }' \
+                      | { dict: . | debug | @json, name }' \
                       - dist/native-*/*.tgz.meta.json ) \
-                  | tee -a "${GITHUB_OUTPUT}"
+                  >> "${GITHUB_OUTPUT}"
             - name: Publish to Homebrew
               uses: the-actions-org/workflow-dispatch@v4
               with:
                   display-workflow-run-url-interval: 10s
-                  inputs: "${{ steps.homebrew.outputs.inputs }}"
+                  inputs: "${{ steps.homebrew-prepare.outputs.inputs }}"
                   ref: main
                   repo: AsherJingkongChen/homebrew--
                   token: "${{ secrets.HOMEBREW_TOKEN }}"
