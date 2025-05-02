@@ -6,14 +6,14 @@ description = "Simple example binary for Homebrew formula testing"
 documentation = "https://github.com/AsherJingkongChen/formula-example"
 edition = "2021"
 homepage = "https://github.com/AsherJingkongChen/formula-example"
-keywords = ["binary", "cli", "example", "testing", "utility"]
+keywords = ["binary", "cli", "example", "testing"]
 license = "MIT"
 name = "formula-example"
 publish = true
 readme = "README.md"
 repository = "https://github.com/AsherJingkongChen/formula-example"
 rust-version = "1.63"
-version = "0.0.0"
+version = "0.0.1"
 
 [profile.release]
 codegen-units = 1
