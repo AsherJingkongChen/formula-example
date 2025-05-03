@@ -104,7 +104,7 @@ jobs:
             - id: homebrew-prepare
               name: Publish to Homebrew (Prepare)
               run: |
-                  ( printf 'inputs=' && \
+                  echo "inputs=$(
                     cargo metadata --format-version 1 --locked \
                       --manifest-path Cargo.toml --no-deps \
                     | jq -cs '
@@ -115,7 +115,7 @@ jobs:
                       | add
                       | with_entries(select(.value != null))
                       | { dict: . | debug | @json, name }' \
-                      - dist/native-*/*.tgz.meta.json ) \
+                      - dist/native-*/*.tgz.meta.json )" \
                   >> "${GITHUB_OUTPUT}"
             - name: Publish to Homebrew
               uses: the-actions-org/workflow-dispatch@v4
